@@ -63,8 +63,16 @@ const Visualiser = function (elementID, params, callback) {
   scriptProcessor.connect(AudioCtx.destination);
   source.connect(AudioCtx.destination);
 
+  const sin = [];
+  const cos = [];
+
   const init = function () {
     requestAnimationFrame(draw);
+
+    for (let i = 0; i < nodeCount; i++) {
+      cos.push(Math.cos(i * 180. / nodeCount));
+      sin.push(Math.sin(i * 180. / nodeCount));
+    }
   };
 
   audio.addEventListener('canplay', init);
@@ -92,20 +100,20 @@ const Visualiser = function (elementID, params, callback) {
     canvasCtx.clearRect(0, 0, canvasEl.width, canvasEl.height);
     canvasCtx.strokeStyle = self.params.color;
 
+    let center;
+    if (typeof self.params.center === 'function') {
+      center = self.params.center();
+    } else {
+      center = self.params.center;
+    }
     for (let i = 0; i < nodeCount; i++) {
-      let center;
-      if (typeof self.params.center === 'function') {
-        center = self.params.center();
-      } else {
-        center = self.params.center;
-      }
       const x0 = center.x;
       const y0 = center.y;
 
-      const x1 = Math.cos(i * 180. / nodeCount) * self.params.r + x0;
-      const y1 = Math.sin(i * 180. / nodeCount) * self.params.r + y0;
-      const x2 = Math.cos(i * 180. / nodeCount) * (self.params.R + dataArray[i]) + x0;
-      const y2 = Math.sin(i * 180. / nodeCount) * (self.params.R + dataArray[i]) + y0;
+      const x1 = toInt(cos[i] * self.params.r + x0);
+      const y1 = toInt(sin[i] * self.params.r + y0);
+      const x2 = toInt(cos[i] * (self.params.R + dataArray[i]) + x0);
+      const y2 = toInt(sin[i] * (self.params.R + dataArray[i]) + y0);
 
       avgVolume += dataArray[i];
 

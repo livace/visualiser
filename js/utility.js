@@ -35,3 +35,9 @@ const RandVector = function (minLength, maxLength) {
 const RandInInterval = function(min, max) {
   return min + Math.random() * (max - min);
 };
+
+const toInt = function (val) {
+  return Math.round(
+    Number(val)
+  );
+};
