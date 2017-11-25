@@ -13,7 +13,7 @@ const setParams = function (params, defaultParams) {
     if (typeof defaultParams[key] === 'object') {
       setParams(params[key], defaultParams[key]);
     } else {
-      params[key] = (params[key] ? params[key] : defaultParams[key]);
+      params[key] = (typeof params[key] !== 'undefined' ? params[key] : defaultParams[key]);
     }
   });
 };

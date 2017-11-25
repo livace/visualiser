@@ -25,7 +25,9 @@ const Particles = function(elementId, params, callback) {
     },
     timeMultiplier: 1,
     color: '#FFFFFF',
-    mass: 1
+    mass: 1,
+    opacity: true,
+    shadows: true
   };
 
   const parentEl = document.getElementById (elementId);
@@ -86,6 +88,7 @@ const Particles = function(elementId, params, callback) {
 
   const redraw = function (time) {
     let timeMultiplier;
+
     if (typeof self.params.timeMultiplier === 'function') {
       timeMultiplier = self.params.timeMultiplier();
     } else {
@@ -100,6 +103,10 @@ const Particles = function(elementId, params, callback) {
 
     const ctx = canvasEl.getContext('2d');
 
+    if (self.params.shadows) {
+      ctx.shadowBlur = self.params.size.max + self.params.size.min;
+    }
+
     ctx.clearRect(0, 0, canvasEl.width, canvasEl.height); // clear canvas
 
     ctx.fillStyle = self.params.color;
@@ -112,11 +119,10 @@ const Particles = function(elementId, params, callback) {
 
       const radius = particle.size / 2;
 
-      ctx.shadowBlur = 3 * radius;
-
       ctx.arc(particle.x, particle.y, radius, 0, Math.PI * 2);
-      ctx.globalAlpha = particle.opacity;
-
+      if (self.params.opacity) {
+        ctx.globalAlpha = particle.opacity;
+      }
       ctx.fill();
 
       particles[index] = particle; // Any way to this better?
@@ -164,7 +170,9 @@ const Particles = function(elementId, params, callback) {
     if (particle.aliveTime > particle.lifetime) {
       return createParticle();
     }
-    particle.opacity = Math.sin(Math.PI * particle.aliveTime / particle.lifetime);
+    if (self.params.opacity) {
+      particle.opacity = Math.sin(Math.PI * particle.aliveTime / particle.lifetime);
+    }
 
     particle.x += particle.speed.x * timePassed;
     particle.y += particle.speed.y * timePassed;
